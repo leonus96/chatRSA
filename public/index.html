@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<title>Chat con Express y Socket.IO</title>
+	<link rel="stylesheet" href="./chat.css">
+</head>
+<body>
+    <div class="variables">
+            <div ><span class="var-local">n</span><span class="value" id="n">-</span></div>
+            <div ><span class="var-local">e</span><span class="value" id="e">-</span></div>
+            <div><span class="var-local">d</span><span class="value" id="d">-</span></div>
+            <div><span class="var-remote">n</span><span class="value" id="nPublic">-</span></div>
+            <div><span class="var-remote">e</span><span class="value" id="ePublic">-</span></div>
+    </div>
+	<ul id="chat">
+       <!-- <li class="avisos">Esperando al otro usuario..</li>
+		<li class="remote"><span class="author">Joseph</span> <span class="message">Hola</span></li>
+		<li class="local"><span class="author">Yo</span> <span class="message">Que tal?</span></li>-->
+	</ul>
+	<form id="chat-form">
+		<input type="text" id="message-text" autocomplete="off" required placeholder="Escribir mensaje">
+		<button>Enviar</button>
+	</form>
+	<script src="./math.min.js"></script>
+	<script src="./socket.io/socket.io.js"></script>
+	<script src="./chat.js"></script>
+</body>
+</html>
