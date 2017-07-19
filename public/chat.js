@@ -3,6 +3,7 @@
 	var io = io(),
 		chatForm = d.querySelector('#chat-form'),
 		messageText = d.querySelector('#message-text'),
+		buttonEnviar = d.querySelector('#buttonEnviar'),
 		chat = d.querySelector('#chat'),
 		nBox = d.querySelector('#n'),
 		eBox = d.querySelector('#e'),
@@ -13,7 +14,8 @@
 		publicKey;
 
 	//Desabilitamos el chat:
-	chatForm.disabled = true;
+	messageText.disabled = true;
+	buttonEnviar.disabled = true
 
 
 
@@ -66,6 +68,9 @@
 			e: keysMe.e
 		});
 		chat.insertAdjacentHTML('beforeend', '<li class="avisos"> ' + "Listo para chatear!" + '</li>');
+
+		messageText.disabled = false;
+		buttonEnviar.disabled = false;
 		console.log('Listo para chatear');
 
 
@@ -87,6 +92,8 @@
 		console.log("- e (publica): " + publicKey.e.toString());
 		chat.insertAdjacentHTML('beforeend', '<li class="avisos"> ' + "Listo para chatear!" + '</li>');
 		console.log('Listo para chatear');
+		messageText.disabled = false;
+		buttonEnviar.disabled = false;
 	})
 
 
@@ -102,7 +109,6 @@
         messageText.value = null;
         return false;
     }
-
 
 	//LLega un mensaje del otro usuario:
     io.on('user says', function (message) {
@@ -123,7 +129,11 @@
 
     io.on('bye bye user', function (byeByeUser) {
         console.log(byeByeUser.message);
-        chatForm.disabled = true;
+        messageText.disabled = true;
+        buttonEnviar.disabled = true;
+        publicKey = null;
+
+		chat.insertAdjacentHTML('beforeend', '<li class="avisos"> Usuario desconectado, esperando a el otro usuario.. </li>');
     });
 
 

@@ -66,7 +66,7 @@ io.on('connection', socket=>{ //conexion para un usuario:
         socket.broadcast.emit('bye bye user', {
             message: 'Ha salido un usuario del chat'
         });
-        --numUsers;
+        numUsers--;
     });
 });
 
