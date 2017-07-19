@@ -218,13 +218,16 @@ function gcdEx(N, A){
 
 function getKeys(){
 	console.log("--- Generando claves ---")
-	var //p = math.floor(math.bignumber(math.random(1000, 9999))),
-		//q = math.floor(math.bignumber(math.random(1000, 9999))),
-		p = math.bignumber('2203'),
-		q = math.bignumber('3217'),
-		n = math.multiply(p, q),
+	var p = sieveOfErathosthenesRandom(1000, 9999), q;
+	do{
+		q = sieveOfErathosthenesRandom(1000, 9999);
+	}while(p == q);
+	p = math.bignumber(p + "");
+	q = math.bignumber(q + "");
+	var n = math.multiply(p, q),
 		fi = math.multiply(math.subtract(p, 1), math.subtract(q, 1)),
 		e = math.bignumber('1');
+
 	console.log("- n: " + n.toString());
 	console.log("- p: " + p.toString());
 	console.log("- q: " + q.toString());
@@ -234,7 +237,7 @@ function getKeys(){
 		e = math.add(e, 1);
 		if(math.equal(gcd(e, fi), 1)) break;
 	}
-	e = math.bignumber('13');
+	//e = math.bignumber('13');
 	console.log("- e :" + e.toString());
 	var d = math.bignumber('0');
 	if(math.equal(gcd(e, fi), 1)){
@@ -326,4 +329,35 @@ function decrypt(c, n, d) {
 	}
 
 	return m;
+}
+
+
+function sieveOfErathosthenesRandom(min, max) {
+	var flags = [];
+	var primes = [];
+	var prime = 2;
+
+	var n = max;
+	while(n--) {
+		flags[max-n] = true;
+	}
+
+	for (prime = 2; prime < Math.sqrt(max); prime++) {
+		if (flags[prime]) {
+			for (var j = prime + prime; j < max; j += prime) {
+				flags[j] = false;
+			}
+		}
+	}
+
+	for (var i = 2; i < max; i++) {
+		if (flags[i]) {
+			if(i >= min)
+				primes.push(i);
+		}
+	}
+
+	var random =Math.floor(Math.random() * primes.length);
+
+	return primes[random];
 }
