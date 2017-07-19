@@ -4,7 +4,7 @@ const express = require('express'),
  app = express(),
  http = require('http').createServer(app),
  io = require('socket.io')(http),
- port = process.env.PORT || 3006,
+ port = process.env.PORT || 3010,
  publicDir = express.static(`${__dirname}/public`);
 
 app
