@@ -89,6 +89,8 @@ body{
     list-style-type: none;
 	background-color: #E5DDD5;
     padding: 10px;
+    overflow-y: scroll;
+    margin-bottom: 40px;
 
 }
 
