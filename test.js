@@ -33,3 +33,30 @@ function sieveOfErathosthenesRandom(min, max) {
 
 	return primes[random];
 }
+
+
+function getDiffieHellman(a, g, p){
+	var A = exp(p, g, a);
+	return A;
+}
+
+
+//exponenciacion:
+function exp(n, a, k){
+	k = (k >>> 0);
+	k = k.toString(2);
+	let b = 1;
+	if(k == 0)
+		return b;
+	let A = a;
+	if(k[k.length - 1] == "1"){
+		b = a;
+	}
+	for(let i = 1; i < k.length; ++i){
+		A = math.mod(math.pow(A, 2), n);
+		if(k[k.length - 1 - i] == "1"){
+			b = math.mod(math.multiply(A, b), n);
+		}
+	}
+	return b;
+}

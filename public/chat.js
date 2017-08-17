@@ -11,19 +11,23 @@
 		nPublicBox = d.querySelector('#nPublic'),
 		ePublicBox = d.querySelector('#ePublic'),
 		keysMe,
-		publicKey;
+		publicKey,
+		//variables Diffie-Hellman:
+		gDiffie = 5,
+		pDiffie = 23,
+		contactDiffie;
 
 	//Desabilitamos el chat:
 	messageText.disabled = true;
 	buttonEnviar.disabled = true
 
 
-
     //Pedimos el username:
 	var username = prompt('Ingresa tu nombre');
+	var keyDiffie = prompt('Ingresa un número secreto');
 	if(username != null && username != "") {
 		//Generamos claves:
-		chat.insertAdjacentHTML('beforeend', '<li class="avisos">Generando claves...</li>');
+		chat.insertAdjacentHTML('beforeend', '<li class="avisos">Diffie Hellman:</li>');
 
 		keysMe = getKeys();
 
@@ -31,19 +35,57 @@
 		eBox.innerHTML = keysMe.e.toString();
 		dBox.innerHTML = keysMe.d.toString();
 
-		//Enviamos nombre de usuario:
-		var usernameData = {
-			username: username,
-			n: math.bignumber(keysMe.n.toString()),
-			e: math.bignumber(keysMe.e.toString()),
-		};
-
-		io.emit('login', usernameData);
+		io.emit('login', username);
 
 	}
 
 	io.on('wait', function(message){
 		chat.insertAdjacentHTML('beforeend', '<li class="avisos"> ' + message + '</li>');
+	});
+
+	io.on('diffie hellman', function(){
+		var B = getDiffieHellman(keyDiffie, gDiffie, pDiffie);
+		chat.insertAdjacentHTML('beforeend', '<li class="avisos"> enviando B: ' + B + '</li>');
+		io.emit('diffie hellman connect', B);
+	});
+
+	io.on('diffie hellman get', function(diffieKey){
+		console.log(diffieKey);
+		contactDiffie = getDiffieHellman(keyDiffie, diffieKey, pDiffie);		
+		var data = {
+			keyGeneral: contactDiffie,
+			A: getDiffieHellman(keyDiffie, gDiffie, pDiffie)
+		}
+			
+		chat.insertAdjacentHTML('beforeend', '<li class="avisos"> enviando A: ' + data.A + '</li>');
+		io.emit('diffie hellman response', data);
+
+	});
+
+	io.on('diffie hellman set', function(diffieKey){
+		console.log(diffieKey);
+		contactDiffie = getDiffieHellman(keyDiffie, diffieKey, pDiffie);
+		io.emit('diffie hellman finish', contactDiffie);
+
+	})
+
+	io.on('autenticado', function(message){
+		chat.insertAdjacentHTML('beforeend', '<li class="avisos"> ' + message + '</li>');
+		console.log('loginRSA');
+		var usernameData = {
+			username: username,
+			n: math.bignumber(keysMe.n.toString()),
+			e: math.bignumber(keysMe.e.toString()),
+		};
+		io.emit('loginRSA', usernameData);
+	});
+
+	io.on('intruso', function(message){
+		chat.insertAdjacentHTML('beforeend', '<li class="avisos"> ' + message + '</li>');
+		alert("sal de chat!!!!");
+		alert("sal de chat!!!!");
+		alert("sal de chat!!!!");
+
 	});
 
 	io.on('connect init', function (dataKey) {
@@ -141,13 +183,6 @@
 
 //Algoritmos para el RSA:
 
-//exponciacion:
-function exponentiation(a, k) {
-	var b = math.bignumber('1');
-	if(math.equal(k, 0))
-		return b;
-	var A = a;
-}
 //exponenciacion:
 function exp(n, a, k){
 	k = (k >>> 0);
@@ -167,6 +202,15 @@ function exp(n, a, k){
 	}
 	return b;
 }
+
+// Diffie-Hellman:
+
+
+function getDiffieHellman(a, g, p){
+	var A = exp(p, g, a);
+	return A;
+}
+
 //euclides:
 function gcd(a, b) {
     var r = math.bignumber('0');

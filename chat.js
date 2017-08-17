@@ -4,7 +4,8 @@ const express = require('express'),
  app = express(),
  http = require('http').createServer(app),
  io = require('socket.io')(http),
- port = process.env.PORT || 3010,
+ port = process.env.PORT || 3011,
+ math = require('mathjs'),
  publicDir = express.static(`${__dirname}/public`);
 
 app
@@ -16,18 +17,20 @@ app
 http.listen(port, ()=> console.log(`Chat RSA corriendo en el puerto http://localhost:${port}`));
 
 let numUsers = 0;
+let keyA;
+let keyB;
 
 io.on('connection', socket=>{ //conexion para un usuario:
 
 	// cuando un usuario ingresa:
-	socket.on('login', usernameData =>{
+	socket.on('login', username =>{
 		if(numUsers > 1){
 			console.log('No pasa');
 			return;
 		}
-		//console.log("Pasó");
+		console.log("Pasó");
 
-		socket.username = usernameData.username;
+		socket.username = username;
 		++numUsers;
 
 		//Cuando es el primer usuario
@@ -36,12 +39,37 @@ io.on('connection', socket=>{ //conexion para un usuario:
 		}
 		//Cuando es el segundo usuario
 		if(numUsers == 2){
-			var dataKey ={
-				n: usernameData.n,
-				e: usernameData.e
-			};
-			socket.broadcast.emit('connect init', dataKey);
+			socket.broadcast.emit('diffie hellman');
+		}	
+	});
+
+	socket.on('diffie hellman connect', (diffieKey)=>{
+		console.log('diffie hellman connect');
+		socket.broadcast.emit('diffie hellman get', diffieKey);
+	});
+
+	socket.on('diffie hellman response', (data)=>{
+		keyA = data.keyGeneral;
+		socket.broadcast.emit('diffie hellman set', data.A);
+	});
+
+	socket.on('diffie hellman finish', (keyBData)=>{
+		keyB = keyBData;
+		console.log(keyB);
+		if(math.equal(keyA, keyB)){
+			socket.broadcast.emit('autenticado', "Usuarios autenticados");
+		}else{
+			socket.emit('intruso', "Usuarios intrusos!");
 		}
+	});
+
+	socket.on('loginRSA', usernameData =>{
+		console.log('loginRSA');
+		var dataKey ={
+			n: usernameData.n,
+			e: usernameData.e
+		};
+		socket.broadcast.emit('connect init', dataKey);
 	});
 
 	socket.on('connect response', (dataKey)=>{
